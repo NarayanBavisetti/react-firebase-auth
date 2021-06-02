@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import { AuthProvider } from "../context/AuthContext";
 import PrivateRoute from "../PrivateRoute";
 import Forgotpassword from "./ForgotPassword";
 import Home from "./Home";
@@ -11,6 +12,7 @@ import Users from "./Users";
 function Main() {
   return (
     <React.Fragment>
+      <AuthProvider>
       <Router>
         <Route exact path="/" component={Home} />
         <Route exact path="/login" component={Login} />
@@ -19,6 +21,7 @@ function Main() {
         <PrivateRoute exact path="/users" component={Users} />
         <Route exact path="/forgotpassword" component={Forgotpassword} />
       </Router>
+      </AuthProvider>
     </React.Fragment>
   );
 }
