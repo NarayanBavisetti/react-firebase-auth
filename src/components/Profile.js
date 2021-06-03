@@ -1,18 +1,31 @@
 import { Button } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import Alert from "@material-ui/lab/Alert";
+import { db } from "../firebase";
 
 function Profile() {
   const { user, logout } = useAuth();
-  const [error,setError] = useState("")
+  const [error, setError] = useState("");
   const history = useHistory();
 
- async function signOut() {
+  const [profiles, setProfiles] = useState([]);
+  useEffect(() => {
+    if (user) {
+      db.collection("Users")
+        .doc(user.uid)
+        .onSnapshot(function (doc) {
+          const data = doc.data();
+          setProfiles(data);
+        });
+    }
+  }, [user]);
+
+  async function signOut() {
     setError("");
     try {
-      await logout()
+      await logout();
       history.push("/login");
     } catch {
       setError("Failed to logout");
@@ -20,9 +33,13 @@ function Profile() {
   }
   return (
     <div>
-        {error && <Alert severity="error">{error}</Alert>}
-      {user.email}
-      {user.uid}
+      {error && <Alert severity="error">{error}</Alert>}
+      {profiles.fullname}
+      {profiles.photoURL ? (
+        <img src={profiles.photoURL} alt="profile" />
+      ) : (
+        <img src="./assets/profile-user.svg" alt="Profile" />
+      )}
       <Button variant="contained" onClick={signOut} color="primary">
         Log Out
       </Button>
