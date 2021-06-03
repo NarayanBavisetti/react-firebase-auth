@@ -1,10 +1,13 @@
-import React from 'react'
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
-function Home() {
-    return (
-        <div>
-            hi bro
-        </div>
-    )
+
+export default function Home() {
+  
+const {user} = useAuth()
+  return (
+    <div >
+ hi bro
+    </div>
+  );
 }
-export default Home;

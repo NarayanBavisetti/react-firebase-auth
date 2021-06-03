@@ -8,9 +8,9 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 import { useAuth } from "../context/AuthContext";
 
 const useStyles = makeStyles({
@@ -32,23 +32,28 @@ const useStyles = makeStyles({
 });
 function Signup() {
   const classes = useStyles();
-  const name = useRef();
-  const email = useRef();
-  const password = useRef();
-  const confirmpassword = useRef();
-const {signup} = useAuth()
-  const [error, setError] = useState();
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmpasswordRef = useRef();
+  const { signup } = useAuth();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  // const [account,setAccount] = useState("");
+  const history = useHistory();
   async function onSubmit(e) {
+
     e.preventDefault();
-    if (password.current.value !== confirmpassword.current.value) {
+    if (passwordRef.current.value !== confirmpasswordRef.current.value) {
       return setError("Passwords does not match");
+    } else if (passwordRef.current.value.length < 6) {
+      return setError("Length of password is less than 6 character");
     }
     try {
       setError("");
       setLoading(true);
-       await signup(email.current.value, password.current.value);
+      await signup(emailRef.current.value, passwordRef.current.value , nameRef.current.value);
+      history.push("/login");
     } catch {
       setError("Failed to create an account");
     }
@@ -63,61 +68,64 @@ const {signup} = useAuth()
           </Avatar>
           <h2>Sign Up</h2>
         </Grid>
-{error && <Alert severity="error">{error}</Alert>}
-        <TextField
-          className={classes.input}
-          ref={name}
-          type="text"
-          label="Name"
-          variant="outlined"
-          placeholder="Enter Name"
-          fullWidth
-          required
-        />
-        <TextField
-          className={classes.input}
-          ref={email}
-          type="email"
-          label="Email"
-          variant="outlined"
-          placeholder="Enter email"
-          fullWidth
-          required
-        />
-        <TextField
-          className={classes.input}
-          label="Password"
-          ref={password}
-          variant="outlined"
-          placeholder="Enter Password"
-          type="password"
-          fullWidth
-          required
-        />
-        <TextField
-          className={classes.input}
-          label="Confirm Password"
-          ref={confirmpassword}
-          variant="outlined"
-          type="password"
-          placeholder="Enter password"
-          fullWidth
-          required
-        />
-        <Typography align="center">
-          Already have an account ? <Link to={"/login"}>Log In</Link>
-        </Typography>
-        <Button
-          className={classes.sign}
-          disabled={loading}
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="secondary"
-          onClick={onSubmit}
-        >
-          Sign Up
-        </Button>
+        {/* This account already exists */}
+        {/* {account && <Alert severity="warning">{account}</Alert> } */}
+        {error && <Alert severity="error">{error}</Alert>}
+        <form onSubmit={onSubmit}>
+          <TextField
+            className={classes.input}
+            inputRef={nameRef}
+            type="text"
+            label="Name"
+            variant="outlined"
+            placeholder="Enter Name"
+            fullWidth
+            required
+          />
+          <TextField
+            className={classes.input}
+            inputRef={emailRef}
+            type="email"
+            label="Email"
+            variant="outlined"
+            placeholder="Enter email"
+            fullWidth
+            required
+          />
+          <TextField
+            className={classes.input}
+            label="Password"
+            inputRef={passwordRef}
+            variant="outlined"
+            placeholder="Enter Password"
+            type="password"
+            fullWidth
+            required
+          />
+          <TextField
+            className={classes.input}
+            label="Confirm Password"
+            inputRef={confirmpasswordRef}
+            variant="outlined"
+            type="password"
+            placeholder="Enter password"
+            fullWidth
+            required
+          />
+          <Typography align="center">
+            Already have an account ? <Link to={"/login"}>Log In</Link>
+          </Typography>
+          <Button
+            className={classes.sign}
+            disabled={loading}
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="secondary"
+          >
+            Sign Up
+          </Button>
+        </form>
       </Paper>
     </Grid>
   );

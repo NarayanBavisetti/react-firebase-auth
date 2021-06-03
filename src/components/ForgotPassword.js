@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   Avatar,
   Button,
@@ -10,6 +10,8 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { useAuth } from "../context/AuthContext";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles({
   input: {
@@ -17,7 +19,7 @@ const useStyles = makeStyles({
   },
   size: {
     width: 350,
-    height: "40vh",
+    height: "45vh",
     margin: "40px auto",
     padding: 20,
   },
@@ -30,8 +32,23 @@ const useStyles = makeStyles({
 });
 function Forgotpassword() {
   const classes = useStyles();
+  const emailRef = useRef();
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { resetpassword } = useAuth();
 
-  function onSubmit() {}
+  async function onSubmit() {
+    try {
+      setError("");
+      setMessage("");
+      setLoading(false);
+      await resetpassword(emailRef.current.value);
+      setMessage("Check you inbox for further instructions");
+    } catch {
+      setError("Failed to reset password");
+    }
+  }
   return (
     <Grid>
       <Paper elevation={10} className={classes.size}>
@@ -41,9 +58,12 @@ function Forgotpassword() {
           </Avatar>
           <h2>Forgot Password</h2>
         </Grid>
+        {error && <Alert severity="error">{error}</Alert>}
+        {message && <Alert severity="success">{message}</Alert>}
         <TextField
           className={classes.input}
           label="Email"
+          inputRef={emailRef}
           variant="outlined"
           placeholder="Enter Email"
           fullWidth
@@ -51,6 +71,7 @@ function Forgotpassword() {
         />
         <Button
           className={classes.sign}
+          disabled={loading}
           fullWidth
           variant="contained"
           color="secondary"

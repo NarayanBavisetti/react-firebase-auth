@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import {
   Avatar,
   Button,
@@ -9,10 +9,12 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { firebase } from "../firebase";
+import { useAuth } from "../context/AuthContext";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles({
   input: {
@@ -35,7 +37,14 @@ const useStyles = makeStyles({
   },
 });
 function Login() {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const { login } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const history = useHistory();
   const classes = useStyles();
+  
   const uiConfig = {
     signInFlow: "popup",
     signInSuccessUrl: "/",
@@ -45,7 +54,18 @@ function Login() {
     ],
   };
 
-  function onSubmit() {}
+  async function onSubmit(e) {
+    e.preventDefault();
+    try {
+      setError("");
+      setLoading(true);
+      await login(emailRef.current.value, passwordRef.current.value);
+      history.push("/");
+    } catch {
+      setError("Failed to login");
+    }
+    setLoading(false);
+  }
   return (
     <Grid>
       <Paper elevation={10} className={classes.size}>
@@ -55,35 +75,42 @@ function Login() {
           </Avatar>
           <h2>Log In</h2>
         </Grid>
-        <TextField
-          className={classes.input}
-          label="Email"
-          variant="outlined"
-          placeholder="Enter email"
-          fullWidth
-          required
-        />
-        <TextField
-          className={classes.input}
-          type="password"
-          label="Password"
-          variant="outlined"
-          placeholder="Enter Password"
-          fullWidth
-          required
-        />
-        <Typography align="right">
-          <Link to={"/forgotpassword"}>Forgot your password ?</Link>
-        </Typography>
-        <Button
-          className={classes.sign}
-          fullWidth
-          variant="contained"
-          color="secondary"
-          onClick={onSubmit}
-        >
-          Log In
-        </Button>
+        {error && <Alert severity="error">{error}</Alert>}
+        <form onSubmit={onSubmit}>
+          <TextField
+            className={classes.input}
+            type="email"
+            label="Email"
+            inputRef={emailRef}
+            variant="outlined"
+            placeholder="Enter email"
+            fullWidth
+            required
+          />
+          <TextField
+            className={classes.input}
+            type="password"
+            inputRef={passwordRef}
+            label="Password"
+            variant="outlined"
+            placeholder="Enter Password"
+            fullWidth
+            required
+          />
+          <Typography align="right">
+            <Link to={"/forgotpassword"}>Forgot your password ?</Link>
+          </Typography>
+          <Button
+            disabled={loading}
+            type="submit"
+            className={classes.sign}
+            fullWidth
+            variant="contained"
+            color="secondary"
+          >
+            Log In
+          </Button>
+        </form>
         <Typography align="center">
           Do not have an account ? <Link to={"/signup"}>Sign Up</Link>
         </Typography>
