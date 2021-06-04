@@ -44,7 +44,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
   const classes = useStyles();
-  
+
   const uiConfig = {
     signInFlow: "popup",
     signInSuccessUrl: "/",
@@ -60,10 +60,11 @@ function Login() {
       setError("");
       setLoading(true);
       await login(emailRef.current.value, passwordRef.current.value);
-      history.push("/");
-    } catch {
-      setError("Failed to login");
+      history.push("/")
+    } catch(error) {
+      setError("Failed to login")
     }
+
     setLoading(false);
   }
   return (

@@ -32,7 +32,7 @@ export default function Users() {
   }, []);
 
   return (
-    <>
+    <React.Fragment>
       {profiles.map((users) => {
         return (
           <Card className={classes.root}>
@@ -58,6 +58,6 @@ export default function Users() {
           </Card>
         );
       })}
-    </>
+    </React.Fragment>
   );
 }

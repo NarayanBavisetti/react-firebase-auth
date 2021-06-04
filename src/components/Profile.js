@@ -27,7 +27,7 @@ function Profile() {
     try {
       await logout();
       history.push("/login");
-    } catch {
+    } catch(error) {
       setError("Failed to logout");
     }
   }

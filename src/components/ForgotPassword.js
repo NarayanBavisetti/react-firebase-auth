@@ -45,8 +45,8 @@ function Forgotpassword() {
       setLoading(false);
       await resetpassword(emailRef.current.value);
       setMessage("Check you inbox for further instructions");
-    } catch {
-      setError("Failed to reset password");
+    } catch(error) {
+      setError("Failed to reset password")
     }
   }
   return (
